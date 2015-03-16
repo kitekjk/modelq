@@ -161,7 +161,7 @@ func (m ModelMeta) InsertableFields() string {
 		if f.IsPrimaryKey && f.IsAutoIncrement {
 			continue
 		}
-		autoTimestamp := strings.ToUpper(f.DefaultValue) == "CURRENT_TIMESTAMP" ||
+		autoTimestamp := strings.Contains(strings.ToUpper(f.DefaultValue), "CURRENT_TIMESTAMP") ||
 			strings.ToUpper(f.DefaultValue) == "NOW()"
 		if f.Type == "time.Time" && autoTimestamp && !m.config.touchTimestamp {
 			continue
@@ -177,7 +177,7 @@ func (m ModelMeta) UpdatableFields() string {
 		if f.IsPrimaryKey {
 			continue
 		}
-		autoUpdateTime := strings.ToUpper(f.Extra) == "ON UPDATE CURRENT_TIMESTAMP"
+		autoUpdateTime := strings.Contains(strings.ToUpper(f.Extra), "ON UPDATE CURRENT_TIMESTAMP")
 		if autoUpdateTime && !m.config.touchTimestamp {
 			continue
 		}

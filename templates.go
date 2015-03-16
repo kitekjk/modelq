@@ -127,10 +127,10 @@ func (q _{{.Name}}Query) Run(dbtx gmq.DbTx) (sql.Result, error) {
 	return q.Query.Exec(dbtx)
 }
 
-type {{.Name}}RowVisitor func(obj {{.Name}}) bool
+type {{.Name}}RowVisitor func(obj {{.Name}}) error
 
 func (q _{{.Name}}Query) Iterate(dbtx gmq.DbTx, functor {{.Name}}RowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := {{.Name}}Objs.to{{.Name}}(columns, rb)
 		return functor(obj)
 	})
@@ -138,19 +138,19 @@ func (q _{{.Name}}Query) Iterate(dbtx gmq.DbTx, functor {{.Name}}RowVisitor) err
 
 func (q _{{.Name}}Query) One(dbtx gmq.DbTx) ({{.Name}}, error) {
 	var obj {{.Name}}
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj = {{.Name}}Objs.to{{.Name}}(columns, rb)
-		return true
+		return nil
 	})
 	return obj, err
 }
 
 func (q _{{.Name}}Query) List(dbtx gmq.DbTx) ([]{{.Name}}, error) {
 	result := make([]{{.Name}}, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := {{.Name}}Objs.to{{.Name}}(columns, rb)
 		result = append(result, obj)
-		return true
+		return nil
 	})
 	return result, err
 }

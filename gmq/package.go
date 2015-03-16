@@ -57,7 +57,7 @@ func Open(driverName, dataSourceName string) (*Db, error) {
 }
 
 type WithinTxFunctor func(tx *Tx) error
-type QueryRowVisitor func(columns []Column, rb []sql.RawBytes) bool
+type QueryRowVisitor func(columns []Column, rb []sql.RawBytes) error
 
 type Column struct {
 	Name  string

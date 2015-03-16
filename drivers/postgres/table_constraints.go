@@ -99,10 +99,10 @@ func (q _TableConstraintsQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 	return q.Query.Exec(dbtx)
 }
 
-type TableConstraintsRowVisitor func(obj TableConstraints) bool
+type TableConstraintsRowVisitor func(obj TableConstraints) error
 
 func (q _TableConstraintsQuery) Iterate(dbtx gmq.DbTx, functor TableConstraintsRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := TableConstraintsObjs.toTableConstraints(columns, rb)
 		return functor(obj)
 	})
@@ -110,19 +110,19 @@ func (q _TableConstraintsQuery) Iterate(dbtx gmq.DbTx, functor TableConstraintsR
 
 func (q _TableConstraintsQuery) One(dbtx gmq.DbTx) (TableConstraints, error) {
 	var obj TableConstraints
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj = TableConstraintsObjs.toTableConstraints(columns, rb)
-		return true
+		return nil
 	})
 	return obj, err
 }
 
 func (q _TableConstraintsQuery) List(dbtx gmq.DbTx) ([]TableConstraints, error) {
 	result := make([]TableConstraints, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := TableConstraintsObjs.toTableConstraints(columns, rb)
 		result = append(result, obj)
-		return true
+		return nil
 	})
 	return result, err
 }

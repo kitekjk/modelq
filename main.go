@@ -32,7 +32,7 @@ func main() {
 	runtime.GOMAXPROCS(pCount)
 
 	if targetDb == "" {
-		fmt.Println("Please provide the target database source.")
+		fmt.Println("* Please provide the target database source.")
 		fmt.Println("Usage:")
 		flag.PrintDefaults()
 		return

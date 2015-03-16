@@ -134,10 +134,10 @@ func (q _ColumnsQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 	return q.Query.Exec(dbtx)
 }
 
-type ColumnsRowVisitor func(obj Columns) bool
+type ColumnsRowVisitor func(obj Columns) error
 
 func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		return functor(obj)
 	})
@@ -145,19 +145,19 @@ func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
 
 func (q _ColumnsQuery) One(dbtx gmq.DbTx) (Columns, error) {
 	var obj Columns
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj = ColumnsObjs.toColumns(columns, rb)
-		return true
+		return nil
 	})
 	return obj, err
 }
 
 func (q _ColumnsQuery) List(dbtx gmq.DbTx) ([]Columns, error) {
 	result := make([]Columns, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		result = append(result, obj)
-		return true
+		return nil
 	})
 	return result, err
 }

@@ -38,7 +38,10 @@ func (m MysqlDriver) dataType(colDataType string) string {
 		"char":     "string",
 		"varchar":  "string",
 		"datetime": "time.Time",
+		"timestamp": "time.Time",
 		"decimal":  "float64",
+		"double":  "float64",
+		"float":  "float32",
 	}
 	if fieldType, ok := kFieldTypes[strings.ToLower(colDataType)]; !ok {
 		return "string"
@@ -56,7 +59,7 @@ func (m MysqlDriver) queryColumns(db *gmq.Db, dbName string, tables string, dbSc
 	}
 
 	query := objs.Select().Where(filter).OrderBy("TableName", "OrdinalPosition")
-	return query.Iterate(db, func(col mysql.Columns) bool {
+	return query.Iterate(db, func(col mysql.Columns) error {
 		if _, ok := dbSchema[col.TableName]; !ok {
 			dbSchema[col.TableName] = make(TableSchema, 0, 5)
 		}
@@ -72,7 +75,7 @@ func (m MysqlDriver) queryColumns(db *gmq.Db, dbName string, tables string, dbSc
 			Comment:      col.ColumnComment,
 		}
 		dbSchema[col.TableName] = append(dbSchema[col.TableName], sCol)
-		return true
+		return nil
 	})
 }
 

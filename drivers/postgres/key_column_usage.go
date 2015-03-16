@@ -99,10 +99,10 @@ func (q _KeyColumnUsageQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 	return q.Query.Exec(dbtx)
 }
 
-type KeyColumnUsageRowVisitor func(obj KeyColumnUsage) bool
+type KeyColumnUsageRowVisitor func(obj KeyColumnUsage) error
 
 func (q _KeyColumnUsageQuery) Iterate(dbtx gmq.DbTx, functor KeyColumnUsageRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
 		return functor(obj)
 	})
@@ -110,19 +110,19 @@ func (q _KeyColumnUsageQuery) Iterate(dbtx gmq.DbTx, functor KeyColumnUsageRowVi
 
 func (q _KeyColumnUsageQuery) One(dbtx gmq.DbTx) (KeyColumnUsage, error) {
 	var obj KeyColumnUsage
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj = KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
-		return true
+		return nil
 	})
 	return obj, err
 }
 
 func (q _KeyColumnUsageQuery) List(dbtx gmq.DbTx) ([]KeyColumnUsage, error) {
 	result := make([]KeyColumnUsage, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) bool {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
 		result = append(result, obj)
-		return true
+		return nil
 	})
 	return result, err
 }

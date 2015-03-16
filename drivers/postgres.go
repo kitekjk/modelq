@@ -67,22 +67,22 @@ func (p PostgresDriver) queryPrimaryKeys(db *gmq.Db, dbName string, tables strin
 	}
 
 	tcJoinKeys := make(StringSet)
-	err := tcObjs.Select().Where(tcFilter).Iterate(db, func(tc postgres.TableConstraints) bool {
+	err := tcObjs.Select().Where(tcFilter).Iterate(db, func(tc postgres.TableConstraints) error {
 		key := fmt.Sprintf("%s.%s", tc.TableName, tc.ConstraintName)
 		tcJoinKeys[key] = struct{}{}
-		return true
+		return nil
 	})
 	if err != nil {
 		return pKeys, err
 	}
 
-	err = kcuObjs.Select().Where(kcuFilter).Iterate(db, func(kcu postgres.KeyColumnUsage) bool {
+	err = kcuObjs.Select().Where(kcuFilter).Iterate(db, func(kcu postgres.KeyColumnUsage) error {
 		key := fmt.Sprintf("%s.%s", kcu.TableName, kcu.ConstraintName)
 		if _, ok := tcJoinKeys[key]; ok {
 			pkey := fmt.Sprintf("%s.%s", kcu.TableName, kcu.ColumnName)
 			pKeys[pkey] = struct{}{}
 		}
-		return true
+		return nil
 	})
 	if err != nil {
 		return pKeys, err
@@ -105,7 +105,7 @@ func (p PostgresDriver) queryColumns(db *gmq.Db, dbName string, tables string, d
 	}
 
 	query := objs.Select().Where(filter).OrderBy("TableName", "OrdinalPosition")
-	return query.Iterate(db, func(col postgres.Columns) bool {
+	return query.Iterate(db, func(col postgres.Columns) error {
 		if _, ok := dbSchema[col.TableName]; !ok {
 			dbSchema[col.TableName] = make(TableSchema, 0, 5)
 		}
@@ -127,6 +127,6 @@ func (p PostgresDriver) queryColumns(db *gmq.Db, dbName string, tables string, d
 			Extra:        extra,
 		}
 		dbSchema[col.TableName] = append(dbSchema[col.TableName], sCol)
-		return true
+		return nil
 	})
 }

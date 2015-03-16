@@ -86,11 +86,11 @@ func (q _Query) sqlRemains(alias string, driverName string) (string, []interface
 func (q _Query) queryOne(dbtx DbTx, query string, params []interface{}, functor QueryRowVisitor) error {
 	rowCount := 0
 	var err error
-	err = q.query(dbtx, query, params, func(cols []Column, r []sql.RawBytes) bool {
+	err = q.query(dbtx, query, params, func(cols []Column, r []sql.RawBytes) error {
 		rowCount++
 		if rowCount >= 2 {
 			err = ErrMultipleRowReturned
-			return false
+			return err
 		} else {
 			return functor(cols, r)
 		}
@@ -131,7 +131,7 @@ func (q _Query) query(dbtx DbTx, query string, params []interface{}, functor Que
 					log.Println(err)
 					return err
 				}
-				if continued := functor(q.columns, vals); !continued {
+				if err := functor(q.columns, vals); err != nil {
 					break
 				}
 			}
