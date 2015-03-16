@@ -7,8 +7,8 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	models "github.com/mijia/modelq/examples/mysql"
-	"github.com/mijia/modelq/gmq"
+	models "github.com/kitekjk/modelq/examples/mysql"
+	"github.com/kitekjk/modelq/gmq"
 )
 
 var db *gmq.Db

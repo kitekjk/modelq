@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mijia/modelq/gmq"
+	"github.com/kitekjk/modelq/gmq"
 	"log"
 	"testing"
 )

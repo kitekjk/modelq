@@ -8,8 +8,8 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	models "github.com/mijia/modelq/examples/postgres"
-	"github.com/mijia/modelq/gmq"
+	models "github.com/kitekjk/modelq/examples/postgres"
+	"github.com/kitekjk/modelq/gmq"
 )
 
 var pqdb *gmq.Db

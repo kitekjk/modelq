@@ -10,8 +10,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"github.com/mijia/modelq/drivers"
-	"github.com/mijia/modelq/gmq"
+	"github.com/kitekjk/modelq/drivers"
+	"github.com/kitekjk/modelq/gmq"
 )
 
 func main() {

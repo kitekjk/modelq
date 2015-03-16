@@ -5,8 +5,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/mijia/modelq/drivers/postgres"
-	"github.com/mijia/modelq/gmq"
+	"github.com/kitekjk/modelq/drivers/postgres"
+	"github.com/kitekjk/modelq/gmq"
 )
 
 type StringSet map[string]struct{}

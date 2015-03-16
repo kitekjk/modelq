@@ -8,7 +8,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"github.com/mijia/modelq/gmq"
+	"github.com/kitekjk/modelq/gmq"
 	"strings"
 )
 

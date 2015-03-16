@@ -9,7 +9,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/mijia/modelq/drivers"
+	"github.com/kitekjk/modelq/drivers"
 )
 
 type CodeResult struct {
