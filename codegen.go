@@ -215,6 +215,7 @@ func toCapitalCase(name string) string {
 	// cp___hello_12jiu -> CpHello12Jiu
 	data := []byte(name)
 	segStart := true
+	segMiddle := false
 	endPos := 0
 	for i := 0; i < len(data); i++ {
 		ch := data[i]
@@ -225,8 +226,12 @@ func toCapitalCase(name string) string {
 				}
 				segStart = false
 			} else {
-				if ch >= 'A' && ch <= 'Z' {
-					ch = ch - 'A' + 'a'
+				if  ch >= 'A' && ch <= 'Z' {
+					if !segMiddle  {
+						ch = ch - 'A' + 'a'
+					}
+				} else {
+					segMiddle = true
 				}
 			}
 			data[endPos] = ch
@@ -235,8 +240,10 @@ func toCapitalCase(name string) string {
 			data[endPos] = ch
 			endPos++
 			segStart = true
+			segMiddle = false
 		} else {
 			segStart = true
+			segMiddle = false
 		}
 	}
 	return string(data[:endPos])

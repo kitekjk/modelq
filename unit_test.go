@@ -32,6 +32,7 @@ func TestCapitalCase(t *testing.T) {
 		[]string{"hello23World", "Hello23World"},
 		[]string{"CP_test_USer", "CpTestUser"},
 		[]string{"USER", "User"},
+		[]string{"userId", "UserId"},
 	}
 	for _, cs := range cases {
 		target := toCapitalCase(cs[0])
@@ -43,19 +44,19 @@ func TestCapitalCase(t *testing.T) {
 
 func TestGmqFilters(t *testing.T) {
 	left := gmq.UnitFilter("id", "=", 1)
-	log.Println(left.SqlString("User"), left.Params())
+	log.Println(left.SqlString("User", "mysql"), left.Params())
 
 	right := gmq.UnitFilter("name", "LIKE", "hello%")
-	log.Println(right.SqlString("User"), right.Params())
+	log.Println(right.SqlString("User", "mysql"), right.Params())
 
 	and := left.And(right)
-	log.Println(and.SqlString("User"), and.Params())
+	log.Println(and.SqlString("User", "mysql"), and.Params())
 
 	in := gmq.InFilter("id", []interface{}{10, 20, 30})
-	log.Println(in.SqlString("User"), in.Params())
+	log.Println(in.SqlString("User", "mysql"), in.Params())
 
 	or := and.Or(in)
-	log.Println(or.SqlString("User"), or.Params())
+	log.Println(or.SqlString("User", "mysql"), or.Params())
 }
 
 func init() {
