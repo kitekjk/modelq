@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/kitekjk/modelq/drivers"
+	"regexp"
 )
 
 type CodeResult struct {
@@ -47,7 +48,9 @@ func generateModels(dbName string, dbSchema drivers.DbSchema, config CodeConfig)
 }
 
 func generateModel(dbName, tName string, schema drivers.TableSchema, config CodeConfig) error {
-	file, err := os.Create(path.Join(config.packageName, tName+".go"))
+
+	fileName := toUnderscore(tName)
+	file, err := os.Create(path.Join(config.packageName, fileName+".go"))
 	if err != nil {
 		return err
 	}
@@ -247,4 +250,13 @@ func toCapitalCase(name string) string {
 		}
 	}
 	return string(data[:endPos])
+}
+
+
+
+func toUnderscore(name string) string {
+	// CpHello12Jiu -> cp_hello12_jiu
+	re := regexp.MustCompile("([^_A-Z])([A-Z])")
+	name = re.ReplaceAllString(name, "${1}_${2}")
+	return strings.ToLower(name)
 }

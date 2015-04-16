@@ -42,6 +42,21 @@ func TestCapitalCase(t *testing.T) {
 	}
 }
 
+func TestUnderscoreCase(t *testing.T) {
+	cases := [][]string{
+		[]string{"CpHello12Jiu", "cp_hello12_jiu"},
+		[]string{"ClientDB", "client_db"},
+		[]string{"Item", "item"},
+		[]string{"item_detail", "item_detail"},
+	}
+	for _, cs := range cases {
+		target := toUnderscore(cs[0])
+		if target != cs[1] {
+			t.Errorf("src %s, expected %s, got %s", cs[0], cs[1], target)
+		}
+	}
+}
+
 func TestGmqFilters(t *testing.T) {
 	left := gmq.UnitFilter("id", "=", 1)
 	log.Println(left.SqlString("User", "mysql"), left.Params())
