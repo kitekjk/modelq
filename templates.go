@@ -145,10 +145,29 @@ func (q _{{.Name}}Query) One(dbtx gmq.DbTx) ({{.Name}}, error) {
 	return obj, err
 }
 
+func (q _{{.Name}}Query) OneMap(dbtx gmq.DbTx) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+		data = {{.Name}}Objs.toMap(columns, rb)
+		return nil
+	})
+	return data, err
+}
+
 func (q _{{.Name}}Query) List(dbtx gmq.DbTx) ([]{{.Name}}, error) {
 	result := make([]{{.Name}}, 0, 10)
 	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
 		obj := {{.Name}}Objs.to{{.Name}}(columns, rb)
+		result = append(result, obj)
+		return nil
+	})
+	return result, err
+}
+
+func (q _{{.Name}}Query) ListMap(dbtx gmq.DbTx) ([]map[string]interface{}, error) {
+	result := make([]map[string]interface{}, 0, 10)
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+		obj := {{.Name}}Objs.toMap(columns, rb)
 		result = append(result, obj)
 		return nil
 	})
@@ -239,6 +258,19 @@ func (o _{{.Name}}Objs) to{{.Name}}(columns []gmq.Column, rb []sql.RawBytes) {{.
 		}
 	}
 	return obj
+}
+
+func (o _{{.Name}}Objs) toMap(columns []gmq.Column, rb []sql.RawBytes) map[string]interface{} {
+	data := map[string]interface{}{}
+	if len(columns) == len(rb) {
+		for i := range columns {
+			switch columns[i].Name {
+			{{range .Fields}}case "{{.ColumnName}}":
+				data[columns[i].Name] = gmq.{{.ConverterFuncName}}(rb[i])
+			{{end}} }
+		}
+	}
+	return data
 }
 
 func (o _{{.Name}}Objs) columns(fields ...string) []gmq.Column {

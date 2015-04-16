@@ -41,7 +41,7 @@ func generateModels(dbName string, dbSchema drivers.DbSchema, config CodeConfig)
 		if result.err != nil {
 			log.Printf("Error when generating code for %s, %s", result.name, result.err)
 		} else {
-			log.Printf("Code generated for table %s, into package %s/%s.go", result.name, config.packageName, result.name)
+			log.Printf("Code generated for table %s, into package %s/%s.go", result.name, config.packageName, toUnderscore(result.name))
 		}
 	}
 	close(jobs)
