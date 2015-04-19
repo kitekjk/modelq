@@ -137,7 +137,7 @@ func (q _ColumnsQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 type ColumnsRowVisitor func(obj Columns) error
 
 func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		return functor(obj)
 	})
@@ -145,7 +145,7 @@ func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
 
 func (q _ColumnsQuery) One(dbtx gmq.DbTx) (Columns, error) {
 	var obj Columns
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj = ColumnsObjs.toColumns(columns, rb)
 		return nil
 	})
@@ -154,7 +154,7 @@ func (q _ColumnsQuery) One(dbtx gmq.DbTx) (Columns, error) {
 
 func (q _ColumnsQuery) List(dbtx gmq.DbTx) ([]Columns, error) {
 	result := make([]Columns, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -960,99 +960,99 @@ func (o _ColumnsObjs) newFilter(name, op string, params ...interface{}) gmq.Filt
 	return gmq.UnitFilter(name, op, params[0])
 }
 
-func (o _ColumnsObjs) toColumns(columns []gmq.Column, rb []sql.RawBytes) Columns {
+func (o _ColumnsObjs) toColumns(columns []gmq.Column, rb []interface{}) Columns {
 	obj := Columns{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			case "table_catalog":
-				obj.TableCatalog = gmq.AsString(rb[i])
+				obj.TableCatalog = gmq.CastString(rb[i])
 			case "table_schema":
-				obj.TableSchema = gmq.AsString(rb[i])
+				obj.TableSchema = gmq.CastString(rb[i])
 			case "table_name":
-				obj.TableName = gmq.AsString(rb[i])
+				obj.TableName = gmq.CastString(rb[i])
 			case "column_name":
-				obj.ColumnName = gmq.AsString(rb[i])
+				obj.ColumnName = gmq.CastString(rb[i])
 			case "ordinal_position":
-				obj.OrdinalPosition = gmq.AsInt(rb[i])
+				obj.OrdinalPosition = gmq.CastInt(rb[i])
 			case "column_default":
-				obj.ColumnDefault = gmq.AsString(rb[i])
+				obj.ColumnDefault = gmq.CastString(rb[i])
 			case "is_nullable":
-				obj.IsNullable = gmq.AsString(rb[i])
+				obj.IsNullable = gmq.CastString(rb[i])
 			case "data_type":
-				obj.DataType = gmq.AsString(rb[i])
+				obj.DataType = gmq.CastString(rb[i])
 			case "character_maximum_length":
-				obj.CharacterMaximumLength = gmq.AsInt(rb[i])
+				obj.CharacterMaximumLength = gmq.CastInt(rb[i])
 			case "character_octet_length":
-				obj.CharacterOctetLength = gmq.AsInt(rb[i])
+				obj.CharacterOctetLength = gmq.CastInt(rb[i])
 			case "numeric_precision":
-				obj.NumericPrecision = gmq.AsInt(rb[i])
+				obj.NumericPrecision = gmq.CastInt(rb[i])
 			case "numeric_precision_radix":
-				obj.NumericPrecisionRadix = gmq.AsInt(rb[i])
+				obj.NumericPrecisionRadix = gmq.CastInt(rb[i])
 			case "numeric_scale":
-				obj.NumericScale = gmq.AsInt(rb[i])
+				obj.NumericScale = gmq.CastInt(rb[i])
 			case "datetime_precision":
-				obj.DatetimePrecision = gmq.AsInt(rb[i])
+				obj.DatetimePrecision = gmq.CastInt(rb[i])
 			case "interval_type":
-				obj.IntervalType = gmq.AsString(rb[i])
+				obj.IntervalType = gmq.CastString(rb[i])
 			case "interval_precision":
-				obj.IntervalPrecision = gmq.AsInt(rb[i])
+				obj.IntervalPrecision = gmq.CastInt(rb[i])
 			case "character_set_catalog":
-				obj.CharacterSetCatalog = gmq.AsString(rb[i])
+				obj.CharacterSetCatalog = gmq.CastString(rb[i])
 			case "character_set_schema":
-				obj.CharacterSetSchema = gmq.AsString(rb[i])
+				obj.CharacterSetSchema = gmq.CastString(rb[i])
 			case "character_set_name":
-				obj.CharacterSetName = gmq.AsString(rb[i])
+				obj.CharacterSetName = gmq.CastString(rb[i])
 			case "collation_catalog":
-				obj.CollationCatalog = gmq.AsString(rb[i])
+				obj.CollationCatalog = gmq.CastString(rb[i])
 			case "collation_schema":
-				obj.CollationSchema = gmq.AsString(rb[i])
+				obj.CollationSchema = gmq.CastString(rb[i])
 			case "collation_name":
-				obj.CollationName = gmq.AsString(rb[i])
+				obj.CollationName = gmq.CastString(rb[i])
 			case "domain_catalog":
-				obj.DomainCatalog = gmq.AsString(rb[i])
+				obj.DomainCatalog = gmq.CastString(rb[i])
 			case "domain_schema":
-				obj.DomainSchema = gmq.AsString(rb[i])
+				obj.DomainSchema = gmq.CastString(rb[i])
 			case "domain_name":
-				obj.DomainName = gmq.AsString(rb[i])
+				obj.DomainName = gmq.CastString(rb[i])
 			case "udt_catalog":
-				obj.UdtCatalog = gmq.AsString(rb[i])
+				obj.UdtCatalog = gmq.CastString(rb[i])
 			case "udt_schema":
-				obj.UdtSchema = gmq.AsString(rb[i])
+				obj.UdtSchema = gmq.CastString(rb[i])
 			case "udt_name":
-				obj.UdtName = gmq.AsString(rb[i])
+				obj.UdtName = gmq.CastString(rb[i])
 			case "scope_catalog":
-				obj.ScopeCatalog = gmq.AsString(rb[i])
+				obj.ScopeCatalog = gmq.CastString(rb[i])
 			case "scope_schema":
-				obj.ScopeSchema = gmq.AsString(rb[i])
+				obj.ScopeSchema = gmq.CastString(rb[i])
 			case "scope_name":
-				obj.ScopeName = gmq.AsString(rb[i])
+				obj.ScopeName = gmq.CastString(rb[i])
 			case "maximum_cardinality":
-				obj.MaximumCardinality = gmq.AsInt(rb[i])
+				obj.MaximumCardinality = gmq.CastInt(rb[i])
 			case "dtd_identifier":
-				obj.DtdIdentifier = gmq.AsString(rb[i])
+				obj.DtdIdentifier = gmq.CastString(rb[i])
 			case "is_self_referencing":
-				obj.IsSelfReferencing = gmq.AsString(rb[i])
+				obj.IsSelfReferencing = gmq.CastString(rb[i])
 			case "is_identity":
-				obj.IsIdentity = gmq.AsString(rb[i])
+				obj.IsIdentity = gmq.CastString(rb[i])
 			case "identity_generation":
-				obj.IdentityGeneration = gmq.AsString(rb[i])
+				obj.IdentityGeneration = gmq.CastString(rb[i])
 			case "identity_start":
-				obj.IdentityStart = gmq.AsString(rb[i])
+				obj.IdentityStart = gmq.CastString(rb[i])
 			case "identity_increment":
-				obj.IdentityIncrement = gmq.AsString(rb[i])
+				obj.IdentityIncrement = gmq.CastString(rb[i])
 			case "identity_maximum":
-				obj.IdentityMaximum = gmq.AsString(rb[i])
+				obj.IdentityMaximum = gmq.CastString(rb[i])
 			case "identity_minimum":
-				obj.IdentityMinimum = gmq.AsString(rb[i])
+				obj.IdentityMinimum = gmq.CastString(rb[i])
 			case "identity_cycle":
-				obj.IdentityCycle = gmq.AsString(rb[i])
+				obj.IdentityCycle = gmq.CastString(rb[i])
 			case "is_generated":
-				obj.IsGenerated = gmq.AsString(rb[i])
+				obj.IsGenerated = gmq.CastString(rb[i])
 			case "generation_expression":
-				obj.GenerationExpression = gmq.AsString(rb[i])
+				obj.GenerationExpression = gmq.CastString(rb[i])
 			case "is_updatable":
-				obj.IsUpdatable = gmq.AsString(rb[i])
+				obj.IsUpdatable = gmq.CastString(rb[i])
 			}
 		}
 	}

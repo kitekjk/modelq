@@ -137,6 +137,22 @@ func (f ModelField) ConverterFuncName() string {
 	}
 }
 
+func (f ModelField) CastFuncName() string {
+	casters := map[string]string{
+		"int64":     "CastInt64",
+		"int":       "CastInt",
+		"string":    "CastString",
+		"time.Time": "CastTime",
+		"float64":   "CastFloat64",
+		"bool":      "CastBool",
+	}
+	if c, ok := casters[f.Type]; ok {
+		return c
+	} else {
+		return "CastString"
+	}
+}
+
 type ModelMeta struct {
 	Name         string
 	DbName       string

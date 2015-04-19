@@ -102,7 +102,7 @@ func (q _TableConstraintsQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 type TableConstraintsRowVisitor func(obj TableConstraints) error
 
 func (q _TableConstraintsQuery) Iterate(dbtx gmq.DbTx, functor TableConstraintsRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := TableConstraintsObjs.toTableConstraints(columns, rb)
 		return functor(obj)
 	})
@@ -110,7 +110,7 @@ func (q _TableConstraintsQuery) Iterate(dbtx gmq.DbTx, functor TableConstraintsR
 
 func (q _TableConstraintsQuery) One(dbtx gmq.DbTx) (TableConstraints, error) {
 	var obj TableConstraints
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj = TableConstraintsObjs.toTableConstraints(columns, rb)
 		return nil
 	})
@@ -119,7 +119,7 @@ func (q _TableConstraintsQuery) One(dbtx gmq.DbTx) (TableConstraints, error) {
 
 func (q _TableConstraintsQuery) List(dbtx gmq.DbTx) ([]TableConstraints, error) {
 	result := make([]TableConstraints, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := TableConstraintsObjs.toTableConstraints(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -330,29 +330,29 @@ func (o _TableConstraintsObjs) newFilter(name, op string, params ...interface{})
 	return gmq.UnitFilter(name, op, params[0])
 }
 
-func (o _TableConstraintsObjs) toTableConstraints(columns []gmq.Column, rb []sql.RawBytes) TableConstraints {
+func (o _TableConstraintsObjs) toTableConstraints(columns []gmq.Column, rb []interface{}) TableConstraints {
 	obj := TableConstraints{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			case "constraint_catalog":
-				obj.ConstraintCatalog = gmq.AsString(rb[i])
+				obj.ConstraintCatalog = gmq.CastString(rb[i])
 			case "constraint_schema":
-				obj.ConstraintSchema = gmq.AsString(rb[i])
+				obj.ConstraintSchema = gmq.CastString(rb[i])
 			case "constraint_name":
-				obj.ConstraintName = gmq.AsString(rb[i])
+				obj.ConstraintName = gmq.CastString(rb[i])
 			case "table_catalog":
-				obj.TableCatalog = gmq.AsString(rb[i])
+				obj.TableCatalog = gmq.CastString(rb[i])
 			case "table_schema":
-				obj.TableSchema = gmq.AsString(rb[i])
+				obj.TableSchema = gmq.CastString(rb[i])
 			case "table_name":
-				obj.TableName = gmq.AsString(rb[i])
+				obj.TableName = gmq.CastString(rb[i])
 			case "constraint_type":
-				obj.ConstraintType = gmq.AsString(rb[i])
+				obj.ConstraintType = gmq.CastString(rb[i])
 			case "is_deferrable":
-				obj.IsDeferrable = gmq.AsString(rb[i])
+				obj.IsDeferrable = gmq.CastString(rb[i])
 			case "initially_deferred":
-				obj.InitiallyDeferred = gmq.AsString(rb[i])
+				obj.InitiallyDeferred = gmq.CastString(rb[i])
 			}
 		}
 	}

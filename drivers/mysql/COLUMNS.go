@@ -113,7 +113,7 @@ func (q _ColumnsQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 type ColumnsRowVisitor func(obj Columns) error
 
 func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		return functor(obj)
 	})
@@ -121,7 +121,7 @@ func (q _ColumnsQuery) Iterate(dbtx gmq.DbTx, functor ColumnsRowVisitor) error {
 
 func (q _ColumnsQuery) One(dbtx gmq.DbTx) (Columns, error) {
 	var obj Columns
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj = ColumnsObjs.toColumns(columns, rb)
 		return nil
 	})
@@ -130,7 +130,7 @@ func (q _ColumnsQuery) One(dbtx gmq.DbTx) (Columns, error) {
 
 func (q _ColumnsQuery) List(dbtx gmq.DbTx) ([]Columns, error) {
 	result := make([]Columns, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := ColumnsObjs.toColumns(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -528,51 +528,51 @@ func (o _ColumnsObjs) newFilter(name, op string, params ...interface{}) gmq.Filt
 	return gmq.UnitFilter(name, op, params[0])
 }
 
-func (o _ColumnsObjs) toColumns(columns []gmq.Column, rb []sql.RawBytes) Columns {
+func (o _ColumnsObjs) toColumns(columns []gmq.Column, rb []interface{}) Columns {
 	obj := Columns{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			case "TABLE_CATALOG":
-				obj.TableCatalog = gmq.AsString(rb[i])
+				obj.TableCatalog = gmq.CastString(rb[i])
 			case "TABLE_SCHEMA":
-				obj.TableSchema = gmq.AsString(rb[i])
+				obj.TableSchema = gmq.CastString(rb[i])
 			case "TABLE_NAME":
-				obj.TableName = gmq.AsString(rb[i])
+				obj.TableName = gmq.CastString(rb[i])
 			case "COLUMN_NAME":
-				obj.ColumnName = gmq.AsString(rb[i])
+				obj.ColumnName = gmq.CastString(rb[i])
 			case "ORDINAL_POSITION":
-				obj.OrdinalPosition = gmq.AsInt64(rb[i])
+				obj.OrdinalPosition = gmq.CastInt64(rb[i])
 			case "COLUMN_DEFAULT":
-				obj.ColumnDefault = gmq.AsString(rb[i])
+				obj.ColumnDefault = gmq.CastString(rb[i])
 			case "IS_NULLABLE":
-				obj.IsNullable = gmq.AsString(rb[i])
+				obj.IsNullable = gmq.CastString(rb[i])
 			case "DATA_TYPE":
-				obj.DataType = gmq.AsString(rb[i])
+				obj.DataType = gmq.CastString(rb[i])
 			case "CHARACTER_MAXIMUM_LENGTH":
-				obj.CharacterMaximumLength = gmq.AsInt64(rb[i])
+				obj.CharacterMaximumLength = gmq.CastInt64(rb[i])
 			case "CHARACTER_OCTET_LENGTH":
-				obj.CharacterOctetLength = gmq.AsInt64(rb[i])
+				obj.CharacterOctetLength = gmq.CastInt64(rb[i])
 			case "NUMERIC_PRECISION":
-				obj.NumericPrecision = gmq.AsInt64(rb[i])
+				obj.NumericPrecision = gmq.CastInt64(rb[i])
 			case "NUMERIC_SCALE":
-				obj.NumericScale = gmq.AsInt64(rb[i])
+				obj.NumericScale = gmq.CastInt64(rb[i])
 			case "DATETIME_PRECISION":
-				obj.DatetimePrecision = gmq.AsInt64(rb[i])
+				obj.DatetimePrecision = gmq.CastInt64(rb[i])
 			case "CHARACTER_SET_NAME":
-				obj.CharacterSetName = gmq.AsString(rb[i])
+				obj.CharacterSetName = gmq.CastString(rb[i])
 			case "COLLATION_NAME":
-				obj.CollationName = gmq.AsString(rb[i])
+				obj.CollationName = gmq.CastString(rb[i])
 			case "COLUMN_TYPE":
-				obj.ColumnType = gmq.AsString(rb[i])
+				obj.ColumnType = gmq.CastString(rb[i])
 			case "COLUMN_KEY":
-				obj.ColumnKey = gmq.AsString(rb[i])
+				obj.ColumnKey = gmq.CastString(rb[i])
 			case "EXTRA":
-				obj.Extra = gmq.AsString(rb[i])
+				obj.Extra = gmq.CastString(rb[i])
 			case "PRIVILEGES":
-				obj.Privileges = gmq.AsString(rb[i])
+				obj.Privileges = gmq.CastString(rb[i])
 			case "COLUMN_COMMENT":
-				obj.ColumnComment = gmq.AsString(rb[i])
+				obj.ColumnComment = gmq.CastString(rb[i])
 			}
 		}
 	}

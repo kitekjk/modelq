@@ -86,7 +86,7 @@ func (q _Query) sqlRemains(alias string, driverName string) (string, []interface
 func (q _Query) queryOne(dbtx DbTx, query string, params []interface{}, functor QueryRowVisitor) error {
 	rowCount := 0
 	var err error
-	err = q.query(dbtx, query, params, func(cols []Column, r []sql.RawBytes) error {
+	err = q.query(dbtx, query, params, func(cols []Column, r []interface{}) error {
 		rowCount++
 		if rowCount >= 2 {
 			err = ErrMultipleRowReturned
@@ -121,7 +121,7 @@ func (q _Query) query(dbtx DbTx, query string, params []interface{}, functor Que
 			if err != nil {
 				return err
 			}
-			vals := make([]sql.RawBytes, len(cols))
+			vals := make([]interface{}, len(cols))
 			ints := make([]interface{}, len(cols))
 			for i := range ints {
 				ints[i] = &vals[i]

@@ -72,6 +72,14 @@ func (obj {{.Name}}) Delete(dbtx gmq.DbTx) (int64, error) {
 		return result.RowsAffected()
 	}{{else}}return 0, gmq.ErrNoPrimaryKeyDefined{{end}}
 }
+
+func (obj *{{.Name}}) Cast(data map[string]interface{}) {
+	{{.Name}}Objs.fromMap(obj, data);
+}
+
+func (obj {{.Name}}) ToMap()  map[string]interface{} {
+	return {{.Name}}Objs.convertMap(obj);
+}
 `
 
 var queryApi string = `
@@ -130,7 +138,7 @@ func (q _{{.Name}}Query) Run(dbtx gmq.DbTx) (sql.Result, error) {
 type {{.Name}}RowVisitor func(obj {{.Name}}) error
 
 func (q _{{.Name}}Query) Iterate(dbtx gmq.DbTx, functor {{.Name}}RowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := {{.Name}}Objs.to{{.Name}}(columns, rb)
 		return functor(obj)
 	})
@@ -138,7 +146,7 @@ func (q _{{.Name}}Query) Iterate(dbtx gmq.DbTx, functor {{.Name}}RowVisitor) err
 
 func (q _{{.Name}}Query) One(dbtx gmq.DbTx) ({{.Name}}, error) {
 	var obj {{.Name}}
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj = {{.Name}}Objs.to{{.Name}}(columns, rb)
 		return nil
 	})
@@ -147,7 +155,7 @@ func (q _{{.Name}}Query) One(dbtx gmq.DbTx) ({{.Name}}, error) {
 
 func (q _{{.Name}}Query) OneMap(dbtx gmq.DbTx) (map[string]interface{}, error) {
 	var data map[string]interface{}
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		data = {{.Name}}Objs.toMap(columns, rb)
 		return nil
 	})
@@ -156,7 +164,7 @@ func (q _{{.Name}}Query) OneMap(dbtx gmq.DbTx) (map[string]interface{}, error) {
 
 func (q _{{.Name}}Query) List(dbtx gmq.DbTx) ([]{{.Name}}, error) {
 	result := make([]{{.Name}}, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := {{.Name}}Objs.to{{.Name}}(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -166,7 +174,7 @@ func (q _{{.Name}}Query) List(dbtx gmq.DbTx) ([]{{.Name}}, error) {
 
 func (q _{{.Name}}Query) ListMap(dbtx gmq.DbTx) ([]map[string]interface{}, error) {
 	result := make([]map[string]interface{}, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := {{.Name}}Objs.toMap(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -247,28 +255,48 @@ func (o _{{.Name}}Objs) newFilter(name, op string, params ...interface{}) gmq.Fi
 	return gmq.UnitFilter(name, op, params[0])
 }
 
-func (o _{{.Name}}Objs) to{{.Name}}(columns []gmq.Column, rb []sql.RawBytes) {{.Name}} {
+func (o _{{.Name}}Objs) to{{.Name}}(columns []gmq.Column, rb []interface{}) {{.Name}} {
 	obj := {{.Name}}{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			{{range .Fields}}case "{{.ColumnName}}":
-				obj.{{.Name}} = gmq.{{.ConverterFuncName}}(rb[i])
+				obj.{{.Name}} = gmq.{{.CastFuncName}}(rb[i])
 			{{end}} }
 		}
 	}
 	return obj
 }
 
-func (o _{{.Name}}Objs) toMap(columns []gmq.Column, rb []sql.RawBytes) map[string]interface{} {
+func (o _{{.Name}}Objs) toMap(columns []gmq.Column, rb []interface{}) map[string]interface{} {
 	data := map[string]interface{}{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			{{range .Fields}}case "{{.ColumnName}}":
-				data[columns[i].Name] = gmq.{{.ConverterFuncName}}(rb[i])
+				data[columns[i].Name] = gmq.{{.CastFuncName}}(rb[i])
 			{{end}} }
 		}
+	}
+	return data
+}
+
+func (o _{{.Name}}Objs) fromMap(obj *{{.Name}}, data map[string]interface{}) {
+	for k, v := range data {
+		switch k {
+		{{range .Fields}}case "{{.ColumnName}}":
+				obj.{{.Name}} = gmq.{{.CastFuncName}}(v)
+		{{end}} }
+	}
+}
+
+func (o _{{.Name}}Objs) convertMap(obj {{.Name}}) map[string]interface{} {
+	data := map[string]interface{}{}
+	for k, v := range o.fcMap {
+		switch k {
+		{{range .Fields}}case "{{.ColumnName}}":
+				data[v] = obj.{{.Name}}
+		{{end}} }
 	}
 	return data
 }

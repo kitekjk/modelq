@@ -57,7 +57,7 @@ func Open(driverName, dataSourceName string) (*Db, error) {
 }
 
 type WithinTxFunctor func(tx *Tx) error
-type QueryRowVisitor func(columns []Column, rb []sql.RawBytes) error
+type QueryRowVisitor func(columns []Column, rb []interface{}) error
 
 type Column struct {
 	Name  string
@@ -169,6 +169,74 @@ func AsFloat64(rb sql.RawBytes) float64 {
 func AsTime(rb sql.RawBytes) time.Time {
 	if t, err := time.Parse("2006-01-02 15:04:05", string(rb)); err == nil {
 		return t
+	}
+	return time.Now()
+}
+
+
+func CastBool(value interface{}) bool {
+	if v, ok := value.(bool); ok {
+		return v
+	}
+
+	if v, ok := value.(string); ok {
+		if b, err := strconv.ParseBool(string(v)); err == nil {
+			return b
+		}
+	}
+
+	return false
+}
+
+func CastString(value interface{}) string {
+	if v, ok := value.(string); ok {
+		return v
+	}
+
+	if v, ok := value.([]byte); ok {
+		return string(v)
+	}
+
+	return ""
+}
+
+func CastInt(value interface{}) int {
+	return int(CastInt64(value))
+}
+
+func CastInt64(value interface{}) int64 {
+	if v, ok := value.(int64); ok {
+		return v
+	}
+	if v, ok := value.(string); ok {
+		if n, err := strconv.ParseInt(v, 10, 64); err == nil {
+			return n
+		}
+	}
+	return 0
+}
+
+func CastFloat64(value interface{}) float64 {
+	if v, ok := value.(float64); ok {
+		return v
+	}
+	if v, ok := value.(string); ok {
+		if n, err := strconv.ParseFloat(v, 64); err == nil {
+			return n
+		}
+	}
+	return 0
+}
+
+func CastTime(value interface{}) time.Time {
+	if v, ok := value.(time.Time); ok {
+		return v
+	}
+
+	if v, ok := value.(string); ok {
+		if t, err := time.Parse("2006-01-02 15:04:05", v); err == nil {
+			return t
+		}
 	}
 	return time.Now()
 }

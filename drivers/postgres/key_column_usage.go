@@ -102,7 +102,7 @@ func (q _KeyColumnUsageQuery) Run(dbtx gmq.DbTx) (sql.Result, error) {
 type KeyColumnUsageRowVisitor func(obj KeyColumnUsage) error
 
 func (q _KeyColumnUsageQuery) Iterate(dbtx gmq.DbTx, functor KeyColumnUsageRowVisitor) error {
-	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	return q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
 		return functor(obj)
 	})
@@ -110,7 +110,7 @@ func (q _KeyColumnUsageQuery) Iterate(dbtx gmq.DbTx, functor KeyColumnUsageRowVi
 
 func (q _KeyColumnUsageQuery) One(dbtx gmq.DbTx) (KeyColumnUsage, error) {
 	var obj KeyColumnUsage
-	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectOne(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj = KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
 		return nil
 	})
@@ -119,7 +119,7 @@ func (q _KeyColumnUsageQuery) One(dbtx gmq.DbTx) (KeyColumnUsage, error) {
 
 func (q _KeyColumnUsageQuery) List(dbtx gmq.DbTx) ([]KeyColumnUsage, error) {
 	result := make([]KeyColumnUsage, 0, 10)
-	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []sql.RawBytes) error {
+	err := q.Query.SelectList(dbtx, func(columns []gmq.Column, rb []interface{}) error {
 		obj := KeyColumnUsageObjs.toKeyColumnUsage(columns, rb)
 		result = append(result, obj)
 		return nil
@@ -330,29 +330,29 @@ func (o _KeyColumnUsageObjs) newFilter(name, op string, params ...interface{}) g
 	return gmq.UnitFilter(name, op, params[0])
 }
 
-func (o _KeyColumnUsageObjs) toKeyColumnUsage(columns []gmq.Column, rb []sql.RawBytes) KeyColumnUsage {
+func (o _KeyColumnUsageObjs) toKeyColumnUsage(columns []gmq.Column, rb []interface{}) KeyColumnUsage {
 	obj := KeyColumnUsage{}
 	if len(columns) == len(rb) {
 		for i := range columns {
 			switch columns[i].Name {
 			case "constraint_catalog":
-				obj.ConstraintCatalog = gmq.AsString(rb[i])
+				obj.ConstraintCatalog = gmq.CastString(rb[i])
 			case "constraint_schema":
-				obj.ConstraintSchema = gmq.AsString(rb[i])
+				obj.ConstraintSchema = gmq.CastString(rb[i])
 			case "constraint_name":
-				obj.ConstraintName = gmq.AsString(rb[i])
+				obj.ConstraintName = gmq.CastString(rb[i])
 			case "table_catalog":
-				obj.TableCatalog = gmq.AsString(rb[i])
+				obj.TableCatalog = gmq.CastString(rb[i])
 			case "table_schema":
-				obj.TableSchema = gmq.AsString(rb[i])
+				obj.TableSchema = gmq.CastString(rb[i])
 			case "table_name":
-				obj.TableName = gmq.AsString(rb[i])
+				obj.TableName = gmq.CastString(rb[i])
 			case "column_name":
-				obj.ColumnName = gmq.AsString(rb[i])
+				obj.ColumnName = gmq.CastString(rb[i])
 			case "ordinal_position":
-				obj.OrdinalPosition = gmq.AsInt(rb[i])
+				obj.OrdinalPosition = gmq.CastInt(rb[i])
 			case "position_in_unique_constraint":
-				obj.PositionInUniqueConstraint = gmq.AsInt(rb[i])
+				obj.PositionInUniqueConstraint = gmq.CastInt(rb[i])
 			}
 		}
 	}
