@@ -205,8 +205,14 @@ func CastInt(value interface{}) int {
 }
 
 func CastInt64(value interface{}) int64 {
+	if v, ok := value.(int); ok {
+		return int64(v)
+	}
 	if v, ok := value.(int64); ok {
 		return v
+	}
+	if v, ok := value.(float64); ok {
+		return int64(v)
 	}
 	if v, ok := value.(string); ok {
 		if n, err := strconv.ParseInt(v, 10, 64); err == nil {
@@ -217,8 +223,14 @@ func CastInt64(value interface{}) int64 {
 }
 
 func CastFloat64(value interface{}) float64 {
+	if v, ok := value.(float32); ok {
+		return float64(v)
+	}
 	if v, ok := value.(float64); ok {
 		return v
+	}
+	if v, ok := value.(int64); ok {
+		return float64(v)
 	}
 	if v, ok := value.(string); ok {
 		if n, err := strconv.ParseFloat(v, 64); err == nil {
@@ -235,6 +247,9 @@ func CastTime(value interface{}) time.Time {
 
 	if v, ok := value.(string); ok {
 		if t, err := time.Parse("2006-01-02 15:04:05", v); err == nil {
+			return t
+		}
+		if t, err := time.Parse("2006-01-02T15:04:05Z", v); err == nil {
 			return t
 		}
 	}

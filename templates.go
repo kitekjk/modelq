@@ -292,8 +292,8 @@ func (o _{{.Name}}Objs) fromMap(obj *{{.Name}}, data map[string]interface{}) {
 
 func (o _{{.Name}}Objs) convertMap(obj {{.Name}}) map[string]interface{} {
 	data := map[string]interface{}{}
-	for k, v := range o.fcMap {
-		switch k {
+	for _, v := range o.fcMap {
+		switch v {
 		{{range .Fields}}case "{{.ColumnName}}":
 				data[v] = obj.{{.Name}}
 		{{end}} }
