@@ -194,7 +194,7 @@ func (q _SelectQuery) Limit(offsets ...int64) Query {
 	var start, size int64
 	if len(offsets) > 0 {
 		if len(offsets) == 1 {
-			start, size = 1, offsets[0]
+			start, size = 0, offsets[0]
 		} else {
 			start, size = offsets[0], offsets[1]
 		}
@@ -204,7 +204,7 @@ func (q _SelectQuery) Limit(offsets ...int64) Query {
 }
 
 func (q _SelectQuery) Page(number, size int) Query {
-	start := int64((number-1)*size + 1)
+	start := int64((number-1)*size)
 	end := int64(size)
 	return q.Limit(start, end)
 }
