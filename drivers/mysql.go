@@ -35,13 +35,15 @@ func (m MysqlDriver) dataType(colDataType string) string {
 		"bigint":   "int64",
 		"int":      "int",
 		"tinyint":  "int",
+		"bit":  	"bool",  // only bit(1)
+		"boolean",	"bool",
 		"char":     "string",
 		"varchar":  "string",
 		"datetime": "time.Time",
 		"timestamp": "time.Time",
-		"decimal":  "float64",
-		"double":  "float64",
-		"float":  "float32",
+		"decimal":  "int",
+		"double":  	"float64",
+		"float":  	"float32",
 	}
 	if fieldType, ok := kFieldTypes[strings.ToLower(colDataType)]; !ok {
 		return "string"
