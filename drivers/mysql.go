@@ -41,7 +41,7 @@ func (m MysqlDriver) dataType(colDataType string) string {
 		"varchar":  "string",
 		"datetime": "time.Time",
 		"timestamp": "time.Time",
-		"decimal":  "int",
+		"decimal":  "int",			// TODO: Not working
 		"double":  	"float64",
 		"float":  	"float32",
 	}
