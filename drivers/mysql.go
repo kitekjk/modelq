@@ -36,7 +36,7 @@ func (m MysqlDriver) dataType(colDataType string) string {
 		"int":      "int",
 		"tinyint":  "int",
 		"bit":  	"bool",  // only bit(1)
-		"boolean",	"bool",
+		"boolean":	"bool",
 		"char":     "string",
 		"varchar":  "string",
 		"datetime": "time.Time",
