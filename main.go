@@ -19,6 +19,8 @@ func main() {
 	var driver, schemaName string
 	var touchTimestamp bool
 	var pCount int
+	var createColumnName string
+	var updateColumnName string
 	flag.StringVar(&targetDb, "db", "", "Target database source string: e.g. root@tcp(127.0.0.1:3306)/test?charset=utf-8")
 	flag.StringVar(&tableNames, "tables", "", "You may specify which tables the models need to be created, e.g. \"user,article,blog\"")
 	flag.StringVar(&packageName, "pkg", "", "Go source code package for generated models")
@@ -27,6 +29,8 @@ func main() {
 	flag.BoolVar(&touchTimestamp, "dont-touch-timestamp", false, "Should touch the datetime fields with default value or on update")
 	flag.IntVar(&pCount, "p", 4, "Parallell running for code generator")
 	flag.BoolVar(&gmq.Debug, "debug", false, "Debug on/off")
+	flag.StringVar(&createColumnName, "createColumn", "createdAt", "column name for create time")
+	flag.StringVar(&updateColumnName, "updateColumn", "updatedAt", "column name for update time")
 	flag.Parse()
 
 	runtime.GOMAXPROCS(pCount)
@@ -56,7 +60,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	codeConfig := CodeConfig{packageName, touchTimestamp}
+	codeConfig := CodeConfig{packageName, touchTimestamp, createColumnName, updateColumnName}
 	generateModels(schemaName, dbSchema, codeConfig)
 	formatCodes(packageName)
 }

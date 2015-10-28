@@ -21,6 +21,8 @@ type CodeResult struct {
 type CodeConfig struct {
 	packageName    string
 	touchTimestamp bool
+	createColumnName string
+	updateColumnName string
 }
 
 func generateModels(dbName string, dbSchema drivers.DbSchema, config CodeConfig) {
@@ -182,7 +184,7 @@ func (m ModelMeta) InsertableFields() string {
 		}
 		autoTimestamp := strings.Contains(strings.ToUpper(f.DefaultValue), "CURRENT_TIMESTAMP") ||
 			strings.ToUpper(f.DefaultValue) == "NOW()"
-		if f.Type == "time.Time" && autoTimestamp && !m.config.touchTimestamp {
+		if f.Type == "time.Time" && autoTimestamp && !m.config.touchTimestamp && m.config.createColumnName == f.ColumnName {
 			continue
 		}
 		fields = append(fields, fmt.Sprintf("\"%s\"", f.Name))
@@ -197,7 +199,7 @@ func (m ModelMeta) UpdatableFields() string {
 			continue
 		}
 		autoUpdateTime := strings.Contains(strings.ToUpper(f.Extra), "ON UPDATE CURRENT_TIMESTAMP")
-		if autoUpdateTime && !m.config.touchTimestamp {
+		if autoUpdateTime && !m.config.touchTimestamp && m.config.updateColumnName == f.ColumnName {
 			continue
 		}
 		fields = append(fields, fmt.Sprintf("\"%s\"", f.Name))
