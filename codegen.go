@@ -184,7 +184,7 @@ func (m ModelMeta) InsertableFields() string {
 		}
 		autoTimestamp := strings.Contains(strings.ToUpper(f.DefaultValue), "CURRENT_TIMESTAMP") ||
 			strings.ToUpper(f.DefaultValue) == "NOW()"
-		if f.Type == "time.Time" && autoTimestamp && !m.config.touchTimestamp && m.config.createColumnName == f.ColumnName {
+		if f.Type == "time.Time" && autoTimestamp && !m.config.touchTimestamp && (m.config.createColumnName == f.ColumnName || m.config.updateColumnName == f.ColumnName) {
 			continue
 		}
 		fields = append(fields, fmt.Sprintf("\"%s\"", f.Name))
