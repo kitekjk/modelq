@@ -153,6 +153,7 @@ func (q _Query) exec(dbtx DbTx, query string, params []interface{}) (sql.Result,
 		if stmt, txErr := tx.Prepare(query); txErr != nil {
 			return txErr
 		} else {
+			defer stmt.Close()
 			result, txErr = stmt.Exec(params...)
 			return txErr
 		}
